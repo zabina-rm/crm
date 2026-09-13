@@ -117,7 +117,12 @@ const numeric={
   next_follow_up:f.next_follow_up||null
 }
     if(isDemoMode){ const now=new Date().toISOString(); const obj={...f,...numeric,id:f.id||uid(),created_at:f.created_at||now}; const next=data.contacts.some(c=>c.id===obj.id)?data.contacts.map(c=>c.id===obj.id?obj:c):[obj,...data.contacts]; setDemo({...data,contacts:next}); }
-    else { const payload={...f,...numeric,user_id:session.user.id}; const {error}=f.id?await supabase.from('contacts').update(payload).eq('id',f.id):await supabase.from('contacts').insert(payload); if(error){setError(error.message);return} await refresh() }
+    else { const payload={
+  ...f,
+  ...numeric,
+  next_follow_up:f.next_follow_up || null,
+  user_id:session.user.id
+}; const {error}=f.id?await supabase.from('contacts').update(payload).eq('id',f.id):await supabase.from('contacts').insert(payload); if(error){setError(error.message);return} await refresh() }
     setModal(null); setSelected(null)
   }
   async function saveDeal(f){ if(isDemoMode){setDemo({...data,deals:[{...f,id:uid(),price:Number(f.price||0),expected_commission:Number(f.expected_commission||0),created_at:new Date().toISOString()},...data.deals]})}else{const {error}=await supabase.from('deals').insert({...f,price:Number(f.price||0),expected_commission:Number(f.expected_commission||0),user_id:session.user.id});if(error){setError(error.message);return}await refresh()} setModal(null) }
