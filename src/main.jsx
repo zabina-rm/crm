@@ -110,7 +110,12 @@ function App(){
   }
   function setDemo(next){ setData(next); saveDemo(next) }
   async function saveContact(f){
-    const numeric={budget:Number(f.budget||0),bedrooms_min:f.bedrooms_min===''?null:Number(f.bedrooms_min),bathrooms_min:f.bathrooms_min===''?null:Number(f.bathrooms_min)}
+const numeric={
+  budget:Number(f.budget||0),
+  bedrooms_min:f.bedrooms_min===''?null:Number(f.bedrooms_min),
+  bathrooms_min:f.bathrooms_min===''?null:Number(f.bathrooms_min),
+  next_follow_up:f.next_follow_up||null
+}
     if(isDemoMode){ const now=new Date().toISOString(); const obj={...f,...numeric,id:f.id||uid(),created_at:f.created_at||now}; const next=data.contacts.some(c=>c.id===obj.id)?data.contacts.map(c=>c.id===obj.id?obj:c):[obj,...data.contacts]; setDemo({...data,contacts:next}); }
     else { const payload={...f,...numeric,user_id:session.user.id}; const {error}=f.id?await supabase.from('contacts').update(payload).eq('id',f.id):await supabase.from('contacts').insert(payload); if(error){setError(error.message);return} await refresh() }
     setModal(null); setSelected(null)
